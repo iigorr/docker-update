@@ -24,14 +24,19 @@ func main() {
 
 	// loop over images and pull the image with the corresponding RepoTags
 	for _, image := range images {
-		imageString := image.RepoTags[0]
-		out, err := cli.ImagePull(ctx, imageString, types.ImagePullOptions{})
-		if err != nil {
-			panic(err)
-		}
-
-		defer out.Close()
-
-		io.Copy(os.Stdout, out)
+		go doPull(image)
 	}
 }
+
+func doPull(image cli.Image) {
+	imageString := image.RepoTags[0]
+	out, err := cli.ImagePull(ctx, imageString, types.ImagePullOptions{})
+	if err != nil {
+		panic(err)
+	}
+
+	defer out.Close()
+
+	io.Copy(os.Stdout, out)
+}
+
